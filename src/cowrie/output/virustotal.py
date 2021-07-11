@@ -34,16 +34,16 @@ Send SSH logins to Virustotal
 import datetime
 import json
 import os
-from typing import Any
+from typing import Any, Dict
 from urllib.parse import urlencode, urlparse
+
+from zope.interface import implementer
 
 from twisted.internet import defer, reactor
 from twisted.internet.ssl import ClientContextFactory
 from twisted.python import log
 from twisted.web import client, http_headers
 from twisted.web.iweb import IBodyProducer
-
-from zope.interface import implementer
 
 import cowrie.core.output
 from cowrie.core.config import CowrieConfig
@@ -97,7 +97,7 @@ class Output(cowrie.core.output.Output):
         """
         pass
 
-    def write(self, entry: dict) -> None:
+    def write(self, entry: Dict[str, Any]) -> None:
         if entry["eventid"] == "cowrie.session.file_download":
             if self.scan_url and "url" in entry:
                 log.msg("Checking url scan report at VT")
@@ -238,7 +238,7 @@ class Output(cowrie.core.output.Output):
         fields = {("apikey", self.apiKey)}
         files = {("file", fileName, open(artifact, "rb"))}
         if self.debug:
-            log.msg("submitting to VT: {}".format(repr(files)))
+            log.msg(f"submitting to VT: {repr(files)}")
         contentType, body = encode_multipart_formdata(fields, files)
         producer = StringProducer(body)
         headers = http_headers.Headers(

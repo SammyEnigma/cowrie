@@ -14,6 +14,7 @@ on:  # yamllint disable-line rule:truthy
     - cron: '14 3 * * *'
 jobs:
   Pur-Upgrade:
+    if: ${{ github.repository == 'cowrie/cowrie' }}
     runs-on: ubuntu-latest
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
@@ -33,6 +34,14 @@ jobs:
           pur -r requirements.txt
           pur -r requirements-dev.txt
           pur --skip csirtgsdk -r requirements-output.txt
+      - name: pip install
+        run: |
+          pip install --upgrade -r requirements.txt
+          pip install --upgrade -r requirements-dev.txt
+          pip install --upgrade -r requirements-output.txt
+      - name: pip check
+        run: |
+          pip check
       - name: git diff
         run: |
           git diff
